@@ -30,12 +30,20 @@ Install [virtinst](https://wiki.libvirt.org/UbuntuKVMWalkthrough.html) in order 
 Add the current user to the libvirt group with:
 `sudo usermod -a -G libvirt $USER`
 
+## Starting the Default Virtual Network
+
+Run the following:
+```bash
+sudo virsh net-list --all  # to confirm default network is not running
+sudo virsh net-start default
+```
+
 ## Creating a Guest VM
 
 To create a Debian guest from the command-line, use:
 
 ```bash
-virt-install --virt-type kvm --name bookworm-amd64 \
+sudo virt-install --virt-type kvm --name bookworm-amd64 \
 --location http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/ \
 --os-variant debian12 \
 --disk size=10 --memory 8000 \
@@ -46,6 +54,22 @@ virt-install --virt-type kvm --name bookworm-amd64 \
 
 - Note that disk size is in GBs.
 - For more information on `virt-install` options see the [`virt-install` man page](https://github.com/virt-manager/virt-manager/blob/main/man/virt-install.rst).
+
+To look up OS-specific options that can be used when provisioning a VM:
+
+```bash
+sudo apt install -y libosinfo-bin
+osinfo-query os | grep debian
+```
+
+To update the `osinfo-query` database:
+```bash
+# Per the instructions at https://libosinfo.org/download/
+# visit https://releases.pagure.org/libosinfo/
+# and download the latest osinfo-db-DATE.tar.gz file
+sudo apt install -y osinfo-db-tools
+sudo osinfo-db-import --system ./osinfo-db-DATE.tar.xz
+```
 
 A fully automated installation can be achieved using
 [preseed](https://wiki.debian.org/DebianInstaller/Preseed).
