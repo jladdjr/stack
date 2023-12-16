@@ -35,7 +35,7 @@ Add the current user to the libvirt group with:
 To create a Debian guest from the command-line, use:
 
 ```bash
-virt-install --virt-type kvm --name bullseye-amd64 \
+virt-install --virt-type kvm --name bookworm-amd64 \
 --location http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/ \
 --os-variant debian12 \
 --disk size=10 --memory 8000 \
