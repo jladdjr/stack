@@ -1,6 +1,6 @@
 # Setting up VMs on Debian
 
-## KVM
+## Install KVM and QEMU
 
 Using the instructions from the [Debian KVM Guide](https://wiki.debian.org/KVM),
 we will install:
@@ -18,3 +18,38 @@ For more information on this relationship, see:
 ```bash
 sudo apt install qemu-system libvirt-daemon-system
 ```
+
+## Install virt-manager
+
+Install [virtinst](https://wiki.libvirt.org/UbuntuKVMWalkthrough.html) in order to provision VMs from the command line.
+- [Virtual Machine Manager Documentation](https://virt-manager.org/)
+  (very light documentation)
+  (more information is available in the virt-manager [man pages](https://github.com/virt-manager/virt-manager/tree/main/man))
+- [Virtualisation tools](https://discourse.ubuntu.com/t/virtualisation-tools/13436) provides an example of using tools in the `virtinst` package (namely, `virt-install`)
+
+Add the current user to the libvirt group with:
+`sudo usermod -a -G libvirt $USER`
+
+## Creating a Guest VM
+
+To create a Debian guest from the command-line, use:
+
+```bash
+virt-install --virt-type kvm --name bullseye-amd64 \
+--location http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/ \
+--os-variant debian12 \
+--disk size=10 --memory 8000 \
+--graphics none \
+--console pty,target_type=serial \
+--extra-args "console=ttyS0"
+```
+
+- Note that disk size is in GBs.
+- For more information on `virt-install` options see the [`virt-install` man page](https://github.com/virt-manager/virt-manager/blob/main/man/virt-install.rst).
+
+A fully automated installation can be achieved using
+[preseed](https://wiki.debian.org/DebianInstaller/Preseed).
+
+## Setting up bridge networking
+
+https://wiki.debian.org/KVM#Setting_up_bridge_networking
