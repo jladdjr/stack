@@ -32,7 +32,8 @@ Add the current user to the libvirt group with:
 
 ## Starting the Default Virtual Network
 
-Run the following:
+Run the following to create a [bridge network](
+https://wiki.debian.org/KVM#Setting_up_bridge_networking):
 ```bash
 sudo virsh net-list --all  # to confirm default network is not running
 sudo virsh net-start default
@@ -102,7 +103,3 @@ rm /var/lib/libvirt/images/<your-vm-name>.qcow2
 For more information on the QCOW2 (QEMU Copy-On-Write 2) image format, see:
 - [QEMU Copy-On-Write image formate specification](https://github.com/libyal/libqcow/blob/main/documentation/QEMU%20Copy-On-Write%20file%20format.asciidoc)
 - [QCOW Wikipedia Entry](https://en.wikipedia.org/wiki/Qcow)
-
-## Setting up bridge networking
-
-https://wiki.debian.org/KVM#Setting_up_bridge_networking
