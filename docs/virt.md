@@ -74,6 +74,10 @@ sudo osinfo-db-import --system ./osinfo-db-DATE.tar.xz
 A fully automated installation can be achieved using
 [preseed](https://wiki.debian.org/DebianInstaller/Preseed).
 
+Once the installation begins, it may look something like this:
+
+![Debian Installer](./images/totoro.png)
+
 ## Deleting Existing Guest VMs
 
 If you need to clear an existing VM
