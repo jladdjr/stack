@@ -43,10 +43,10 @@ sudo virsh net-start default
 To create a Debian guest from the command-line, use:
 
 ```bash
-sudo virt-install --virt-type kvm --name bookworm-amd64 \
+sudo virt-install --virt-type kvm --name <your-vm-name> \
 --location http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/ \
 --os-variant debian12 \
---disk size=10 --memory 8000 \
+--disk size=50 --memory 8000 \
 --graphics none \
 --console pty,target_type=serial \
 --extra-args "console=ttyS0"
@@ -73,6 +73,31 @@ sudo osinfo-db-import --system ./osinfo-db-DATE.tar.xz
 
 A fully automated installation can be achieved using
 [preseed](https://wiki.debian.org/DebianInstaller/Preseed).
+
+## Deleting Existing Guest VMs
+
+If you need to clear an existing VM
+(including for an installation that was aborted),
+first check to see if the VM is listed using `virsh`.
+If it is listed, you can use `virsh` to remove the VM.
+
+```bash
+virsh list --all
+virsh shutdown <your-vm-name>
+virsh undefine <your-vm-name>
+```
+
+Whether your VM is listed by `virsh` or not,
+you can clear your VM's disk files
+by using `rm` directly:
+
+```bash
+rm /var/lib/libvirt/images/<your-vm-name>.qcow2
+```
+
+For more information on the QCOW2 (QEMU Copy-On-Write 2) image format, see:
+- [QEMU Copy-On-Write image formate specification](https://github.com/libyal/libqcow/blob/main/documentation/QEMU%20Copy-On-Write%20file%20format.asciidoc)
+- [QCOW Wikipedia Entry](https://en.wikipedia.org/wiki/Qcow)
 
 ## Setting up bridge networking
 
