@@ -52,7 +52,7 @@ sudo virt-install --virt-type kvm --name <your-vm-name> \
 --extra-args "console=ttyS0"
 ```
 
-- Note that disk size is in GBs.
+- Note that disk size is in GBs. A Kubernetes worker node should be given several tens of GBs.
 - For more information on `virt-install` options see the [`virt-install` man page](https://github.com/virt-manager/virt-manager/blob/main/man/virt-install.rst).
 
 To look up OS-specific options that can be used when provisioning a VM:
