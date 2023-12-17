@@ -14,6 +14,9 @@ Nodes should have:
 
 https://docs.k3s.io/installation/requirements?os=debian#networking
 
+It seems like port `6443` may be the only inbound port that must be open
+both for servers and agents.
+
 TODO: Give specific instructions for opening required ports
 
 ## Installing the server
