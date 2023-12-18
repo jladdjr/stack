@@ -29,7 +29,7 @@ Note: As root, I found that I needed to update my path to include `/usr/sbin`:
 ```bash
 echo "export PATH=/usr/sbin:$PATH" > ~/.bashrc
 source ~/.bashrc
-```bash
+```
 
 Back up your current set of iptables rules with:
 
