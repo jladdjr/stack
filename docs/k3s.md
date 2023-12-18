@@ -69,7 +69,7 @@ mkdir -p /etc/rancher/k3s
 Create a config.yaml file at `/etc/rancher/k3s/config.yaml`, containing:
 
 ```yaml
-token: "<new-k3s-token>"
+token: "<k3s-token>"
 debug: true
 ```
 
@@ -167,8 +167,15 @@ http://localhost:8001/healthz
 
 ## Installing the agent
 
-TODO: Update to move token to file
-
 ```bash
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server https://k3s.example.com --token mypassword" sh -s -
+apt install -y curl
+curl -sfL https://get.k3s.io \
+    | INSTALL_K3S_EXEC="agent" \
+      K3S_TOKEN="<k3s-token>" \
+      sh -s - --server https://k3s.example.com
 ```
+
+Note: Unlike with the server installation,
+the agent installation seems to require supplying the token in the above command.
+To avoid the secret being logged in the shell's history,
+you could set the K3s token secret in a temporary environment variable.
