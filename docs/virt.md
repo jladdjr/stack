@@ -79,6 +79,28 @@ Once the installation begins, it may look something like this:
 
 ![Debian Installer](./images/totoro.png)
 
+## Getting List of VMs
+
+To check on the state of VMs, run
+
+```bash
+sudo virsh list --all
+```
+
+## Starting and Stopping VMs
+
+To start a VM, run:
+
+```bash
+sudo virsh start <vm_name>
+```
+
+To stop a VM, run:
+
+```bash
+sudo virsh stop <vm_name>
+```
+
 ## Deleting Existing Guest VMs
 
 If you need to clear an existing VM
@@ -103,3 +125,9 @@ rm /var/lib/libvirt/images/<your-vm-name>.qcow2
 For more information on the QCOW2 (QEMU Copy-On-Write 2) image format, see:
 - [QEMU Copy-On-Write image formate specification](https://github.com/libyal/libqcow/blob/main/documentation/QEMU%20Copy-On-Write%20file%20format.asciidoc)
 - [QCOW Wikipedia Entry](https://en.wikipedia.org/wiki/Qcow)
+
+To prune a VM that no longer exists, run:
+
+```bash
+sudo virsh undefine <vm_name>
+```
