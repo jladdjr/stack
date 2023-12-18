@@ -56,22 +56,53 @@ Agree to do so.
 
 ## Installing the server
 
+Perform the steps in this section as `root`.
+
 Following along with the instructions given [here](https://docs.k3s.io/installation/configuration#putting-it-all-together):
+
+Create the `/etc/rancher/k3s` directory:
+
+```bash
+mkdir -p /etc/rancher/k3s
+```
 
 Create a config.yaml file at `/etc/rancher/k3s/config.yaml`, containing:
 
 ```yaml
-token: "secret"
+token: "<new-k3s-token>"
 debug: true
 ```
 
 Run the K3s installer script with:
 
 ```bash
+apt install -y curl
 curl -sfL https://get.k3s.io \
     | K3S_KUBECONFIG_MODE="644" \
       INSTALL_K3S_EXEC="server" \
       sh -s - --flannel-backend none
+```
+
+You should see output similar to the following:
+
+```
+[INFO]  Finding release for channel stable
+[INFO]  Using v1.28.4+k3s2 as release
+[INFO]  Downloading hash https://github.com/k3s-io/k3s/releases/download/v1.28.4+k3s2/sha256sum-amd64.txt
+[INFO]  Downloading binary https://github.com/k3s-io/k3s/releases/download/v1.28.4+k3s2/k3s
+[INFO]  Verifying binary download
+[INFO]  Installing k3s to /usr/local/bin/k3s
+[INFO]  Skipping installation of SELinux RPM
+[INFO]  Creating /usr/local/bin/kubectl symlink to k3s
+[INFO]  Creating /usr/local/bin/crictl symlink to k3s
+[INFO]  Creating /usr/local/bin/ctr symlink to k3s
+[INFO]  Creating killall script /usr/local/bin/k3s-killall.sh
+[INFO]  Creating uninstall script /usr/local/bin/k3s-uninstall.sh
+[INFO]  env: Creating environment file /etc/systemd/system/k3s.service.env
+[INFO]  systemd: Creating service file /etc/systemd/system/k3s.service
+[INFO]  systemd: Enabling k3s unit
+Created symlink /etc/systemd/system/multi-user.target.wants/k3s.service → /etc/systemd/system/k3s.service.
+[INFO]  systemd: Starting k3s
 ```
 
 This creates a server with:
@@ -80,6 +111,22 @@ This creates a server with:
 - [Flannel](https://docs.k3s.io/installation/network-options#flannel-options) backend set to none
 - The token set to `secret`
 - Debug logging enabled
+
+Furthermore, it installs a `k3s` binary at `/usr/local/bin/k3s`,
+and creates a symbolic link at `/usr/local/bin/kubectl` that points to `k3s`.
+
+## Getting information about the cluster
+
+Run `kubectl cluster-info` to confirm that the cluster is running.
+You should see something similar to the following:
+
+```
+Kubernetes control plane is running at https://127.0.0.1:6443
+CoreDNS is running at https://127.0.0.1:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://127.0.0.1:6443/api/v1/namespaces/kube-system/services/https:metrics-server:https/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
 
 ## Installing the agent
 
