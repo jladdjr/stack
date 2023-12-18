@@ -12,12 +12,47 @@ Nodes should have:
 
 ### Networking Requirements
 
-https://docs.k3s.io/installation/requirements?os=debian#networking
-
-It seems like port `6443` may be the only inbound port that must be open
+Per the list of [K3s requirements](https://docs.k3s.io/installation/requirements?os=debian#networking),
+it seems like port `6443` may be the only inbound port that must be open
 both for servers and agents.
 
-TODO: Give specific instructions for opening required ports
+Perform the steps in this section as `root`.
+
+Install `iptables` with:
+
+```bash
+apt install iptables
+```
+
+Note: As root, I found that I needed to update my path to include `/usr/sbin`:
+
+```bash
+echo "export PATH=/usr/sbin:$PATH" > ~/.bashrc
+source ~/.bashrc
+```bash
+
+Back up your current set of iptables rules with:
+
+```bash
+mkdir ~/backups
+iptables-save > ~/backups/iptables_backup_$(date +"%Y%m%d_%H%M%S").rules
+```
+
+Open port 6443 with:
+
+```bash
+iptables -A INPUT -p tcp --dport 6443 -j ACCEPT
+```
+
+To make sure the rules persist, run:
+
+```bash
+apt install iptables-persistent
+```
+
+During the `iptables-persistent` installation you will be asked if you would like to
+save the current set of rules to `/etc/iptables/rules.v4`.
+Agree to do so.
 
 ## Installing the server
 
