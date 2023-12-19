@@ -12,11 +12,8 @@ Nodes should have:
 
 ### Networking Requirements
 
-Per the list of [K3s requirements](https://docs.k3s.io/installation/requirements?os=debian#networking),
-it seems like port `6443` may be the only inbound port that must be open
-both for servers and agents.
-
-Perform the steps in this section as `root`.
+The following steps reflect the [K3s networking requirements](https://docs.k3s.io/installation/requirements?os=debian#networking).
+Perform the steps in this section as `root` on both the server and agent nodes.
 
 Install `iptables` with:
 
@@ -38,11 +35,20 @@ mkdir ~/backups
 iptables-save > ~/backups/iptables_backup_$(date +"%Y%m%d_%H%M%S").rules
 ```
 
-Open port 6443 with:
+Open port 6443, the essential port used by Kubernetes, with:
 
 ```bash
 iptables -A INPUT -p tcp --dport 6443 -j ACCEPT
 ```
+
+Also open port 8472 which is required by the
+[Flannel Container Network Interface (CNI) using the VXLAN backend](https://docs.k3s.io/installation/requirements#inbound-rules-for-k3s-server-nodes):
+
+```bash
+iptables -A INPUT -p udp --dport 8472 -j ACCEPT
+```
+
+Note that in this case the protocol is UDP.
 
 To make sure the rules persist, run:
 
@@ -80,7 +86,7 @@ apt install -y curl
 curl -sfL https://get.k3s.io \
     | K3S_KUBECONFIG_MODE="644" \
       INSTALL_K3S_EXEC="server" \
-      sh -s - --flannel-backend none
+      sh -s - --flannel-backend vxlan
 ```
 
 You should see output similar to the following:
@@ -107,7 +113,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/k3s.service → /etc
 
 This creates a server with:
 
-- A `kubeconfig` file with permissions 644
+- A `kubeconfig` file with permissions 644 stored at `/etc/rancher/k3s/k3s.yaml`
 - [Flannel](https://docs.k3s.io/installation/network-options#flannel-options) backend set to none
 - The token set to `secret`
 - Debug logging enabled
@@ -117,7 +123,15 @@ and creates a symbolic link at `/usr/local/bin/kubectl` that points to `k3s`.
 
 ## Getting information about the cluster
 
-Run `kubectl cluster-info` to confirm that the cluster is running.
+Run `kubectl get nodes` to ensure that the server node's status is `Ready`.
+You should see something similar to the following:
+
+```
+NAME     STATUS   ROLES                  AGE   VERSION
+totoro   Ready    control-plane,master   23h   v1.28.4+k3s2
+```
+
+Run `kubectl cluster-info` to gather additional information about the cluster.
 You should see something similar to the following:
 
 ```
@@ -163,7 +177,61 @@ kubectl proxy
 ```
 
 You will now be able to visit
-http://localhost:8001/healthz
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+You will need to be authorized to use this endpoint.
+
+### Authenticating
+
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+
+https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+```
+kubectl -n kubernetes-dashboard create token admin-user
+```
+
+
+## Running a Sample App
+
+https://www.digitalocean.com/community/tutorials/how-to-use-minikube-for-local-kubernetes-development-and-testing
+
+
+
+```
+kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
+```
+
+```
+kubectl expose deployment web --type=NodePort --port=8080
+```
+
+```
+kubectl get service web
+```
 
 ## Installing the agent
 
